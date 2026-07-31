@@ -201,6 +201,25 @@
     if (document.visibilityState === 'visible') requestWakeLock();
   });
 
+  // --- Fullscreen fallback (hides the Android nav bar) ---
+  // The Fullscreen API requires a user gesture, so we trigger it on the
+  // very first tap/press. display:"fullscreen" in the manifest handles
+  // this automatically on many devices, but some (e.g. Samsung) need this
+  // explicit request as well.
+  let fullscreenRequested = false;
+  function requestFullscreenOnce() {
+    if (fullscreenRequested) return;
+    fullscreenRequested = true;
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+    if (req) {
+      req.call(el).catch(() => {});
+    }
+  }
+  document.body.addEventListener('pointerdown', requestFullscreenOnce, { once: true });
+  // Also try immediately in case the browser allows it on load for installed PWAs
+  requestFullscreenOnce();
+
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').catch(() => {});
