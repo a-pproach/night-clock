@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Night Clock</title>
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAACuElEQVR4nO3cQW7bMBCGUaboLbrL/c/UXe/RhbywW9dQ9A/lUvPeNoAKjL4yEmNzDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJaPeZf+/PU547I/f/yccdn/x1pzmxLQpBHcu2RGK87tW+3lxilTOO1fOdOicysO6Mz7eqWG1p1bZUDn39FrNLT03MoCete9XL2h1edW/wxEKzUBvXcZWHcRusDcvueXeK3wvXHdUA5YZW5zf4XV7jpccu/nqYXm5hmIiICICIiIgIgIiMj01/gV/eu9t89r4H4CevB6y2T7qYzuCehm/26bjO55Bhrj0F5tq23xFwR0PAUNDQGFEWiodUAlt795Q60DItc3oMKVo/Mi1DcgSjQNqHzNaLsINQ2IKgIiIiAiAiIiICICIiIgIk0DKv80T9uPBzUNiCp9AypcM9ouP6NzQJRoHVDJytF5+RnNAxrx7W9ezxDQCCJQzxDQ5kAK6tn4XtjNFsSej/VI556AHrzOSDp/E9ATQtnPMxARAREREBEBEREQEQERERARAREREBE70U/4U8Z+AnrglNavEtCNU1qP8Qw0hlNaAwJySmuke0BOaQ21DsgprbnWAZHrG5BTWkv0DYgSTQNySmuVpgFRRUBEBEREQEQERERARAREpGlATmmt0jQgqvQNyCmtJfoGRInWATmlNdc6oOGU1lj3gIZTWjMCGsMprQHfC7txSusxAnrglNavEtATQtnPMxARAREREBEBEREQEQERmRtQ7dft+nx5b6G5Td8H6nPXa60yt5oV6L07b+vu+11gbp6BiJQF9K7/TOsuP5vV51a5Ap0/i9Xr2Sw9t+JfYWfO4hr1bNadW/0z0DmzuFI9m0Xn9lF7uXuTXkSvl84fzA0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4EJ+A5Rc2NwBRdufAAAAAElFTkSuQmCC">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAACuElEQVR4nO3cQW7bMBCGUaboLbrL/c/UXe/RhbywW9dQ9A/lUvPeNoAKjL4yEmNzDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYJaPeZf+/PU547I/f/yccdn/x1pzmxLQpBHcu2RGK87tW+3lxilTOO1fOdOicysO6Mz7eqWG1p1bZUDn39FrNLT03MoCete9XL2h1edW/wxEKzUBvXcZWHcRusDcvueXeK3wvXHdUA5YZW5zf4XV7jpccu/nqYXm5hmIiICICIiIgIgIiMj01/gV/eu9t89r4H4CevB6y2T7qYzuCehm/26bjO55Bhrj0F5tq23xFwR0PAUNDQGFEWiodUAlt795Q60DItc3oMKVo/Mi1DcgSjQNqHzNaLsINQ2IKgIiIiAiAiIiICICIiIgIk0DKv80T9uPBzUNiCp9AypcM9ouP6NzQJRoHVDJytF5+RnNAxrx7W9ezxDQCCJQzxDQ5kAK6tn4XtjNFsSej/VI556AHrzOSDp/E9ATQtnPMxARAREREBEBEREQEQERERARAREREBE70U/4U8Z+AnrglNavEtCNU1qP8Qw0hlNaAwJySmuke0BOaQ21DsgprbnWAZHrG5BTWkv0DYgSTQNySmuVpgFRRUBEBEREQEQERERARAREpGlATmmt0jQgqvQNyCmtJfoGRInWATmlNdc6oOGU1lj3gIZTWjMCGsMprQHfC7txSusxAnrglNavEtATQtnPMxARAREREBEBEREQEQERmRtQ7dft+nx5b6G5Td8H6nPXa60yt5oV6L07b+vu+11gbp6BiJQF9K7/TOsuP5vV51a5Ap0/i9Xr2Sw9t+JfYWfO4hr1bNadW/0z0DmzuFI9m0Xn9lF7uXuTXkSvl84fzA0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4EJ+A5Rc2NwBRdufAAAAAElFTkSuQmCC">
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+  }
+  body.light {
+    background: #fff;
+  }
+  #clock {
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    font-size: 22vw;
+    color: #22e522;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5), 2px 2px 4px rgba(0,0,0,0.6);
+    letter-spacing: 2px;
+    line-height: 1;
+    opacity: var(--brightness, 0.6);
+    transition: opacity 0.1s ease;
+  }
+  body.light #clock {
+    opacity: 1; /* always full strength on the white daylight view */
+  }
+
+  #dimmer-panel {
+    position: fixed;
+    left: 50%;
+    bottom: 8%;
+    transform: translateX(-50%);
+    width: 70vw;
+    max-width: 420px;
+    padding: 18px 22px;
+    background: rgba(30,30,30,0.85);
+    border-radius: 16px;
+    display: none;
+    align-items: center;
+    gap: 14px;
+    box-sizing: border-box;
+    backdrop-filter: blur(6px);
+  }
+  #dimmer-panel.visible {
+    display: flex;
+  }
+  #dimmer-panel label {
+    font-family: -apple-system, sans-serif;
+    color: #22e522;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  #dimmer-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: #444;
+    outline: none;
+  }
+  #dimmer-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #22e522;
+    cursor: pointer;
+  }
+  #dimmer-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border: none;
+    border-radius: 50%;
+    background: #22e522;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <div id="clock">--:--</div>
+
+  <div id="dimmer-panel">
+    <label for="dimmer-slider">Brightness</label>
+    <input type="range" id="dimmer-slider" min="10" max="100" value="60">
+  </div>
+
+<script>
+  const clockEl = document.getElementById('clock');
+  const dimmerPanel = document.getElementById('dimmer-panel');
+  const dimmerSlider = document.getElementById('dimmer-slider');
+
+  function updateClock() {
+    const now = new Date();
+    let h = now.getHours();
+    const m = now.getMinutes().toString().padStart(2, '0');
+    h = h % 12;
+    if (h === 0) h = 12;
+    clockEl.textContent = h + ':' + m;
+  }
+
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // --- Brightness (dimmer) handling ---
+  function setBrightness(pct) {
+    document.documentElement.style.setProperty('--brightness', (pct / 100).toFixed(2));
+    dimmerSlider.value = pct;
+    localStorage.setItem('nightClockBrightness', pct);
+  }
+
+  const savedBrightness = parseInt(localStorage.getItem('nightClockBrightness'), 10);
+  setBrightness(!isNaN(savedBrightness) ? savedBrightness : 60);
+
+  dimmerSlider.addEventListener('input', (e) => {
+    setBrightness(parseInt(e.target.value, 10));
+  });
+
+  let hideTimer = null;
+  function showDimmer() {
+    dimmerPanel.classList.add('visible');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => dimmerPanel.classList.remove('visible'), 4000);
+  }
+  dimmerPanel.addEventListener('pointerdown', () => clearTimeout(hideTimer));
+  dimmerPanel.addEventListener('pointerup', showDimmer);
+
+  // --- Tap vs. long-press handling (Pointer Events = one clean event stream,
+  // no duplicate touch+mouse firing on Android) ---
+  let pressTimer = null;
+  let longPressTriggered = false;
+  let startX = 0, startY = 0;
+  const LONG_PRESS_MS = 450;
+  const MOVE_CANCEL_PX = 12;
+
+  function startPress(e) {
+    if (dimmerPanel.contains(e.target)) return; // ignore presses on the panel itself
+    longPressTriggered = false;
+    startX = e.clientX;
+    startY = e.clientY;
+    pressTimer = setTimeout(() => {
+      longPressTriggered = true;
+      showDimmer();
+    }, LONG_PRESS_MS);
+  }
+
+  function endPress(e) {
+    if (dimmerPanel.contains(e.target)) return;
+    clearTimeout(pressTimer);
+    if (!longPressTriggered) {
+      // it was a short tap
+      if (dimmerPanel.classList.contains('visible')) {
+        dimmerPanel.classList.remove('visible');
+      } else {
+        document.body.classList.toggle('light');
+      }
+    }
+  }
+
+  function movePress(e) {
+    if (Math.abs(e.clientX - startX) > MOVE_CANCEL_PX || Math.abs(e.clientY - startY) > MOVE_CANCEL_PX) {
+      clearTimeout(pressTimer);
+    }
+  }
+
+  document.body.addEventListener('pointerdown', startPress);
+  document.body.addEventListener('pointerup', endPress);
+  document.body.addEventListener('pointermove', movePress);
+  document.body.addEventListener('pointercancel', () => clearTimeout(pressTimer));
+
+  let wakeLock = null;
+  async function requestWakeLock() {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLock = await navigator.wakeLock.request('screen');
+      }
+    } catch (e) {}
+  }
+  requestWakeLock();
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') requestWakeLock();
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
