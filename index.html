@@ -206,9 +206,16 @@
   // very first tap/press. display:"fullscreen" in the manifest handles
   // this automatically on many devices, but some (e.g. Samsung) need this
   // explicit request as well.
+  // IMPORTANT: only do this when actually running as an installed
+  // standalone app — never in a regular browser tab, or it traps the
+  // address bar/menu and makes the site impossible to install/navigate.
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.matchMedia('(display-mode: fullscreen)').matches ||
+                        window.navigator.standalone === true;
+
   let fullscreenRequested = false;
   function requestFullscreenOnce() {
-    if (fullscreenRequested) return;
+    if (fullscreenRequested || !isStandalone) return;
     fullscreenRequested = true;
     const el = document.documentElement;
     const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
@@ -216,9 +223,10 @@
       req.call(el).catch(() => {});
     }
   }
-  document.body.addEventListener('pointerdown', requestFullscreenOnce, { once: true });
-  // Also try immediately in case the browser allows it on load for installed PWAs
-  requestFullscreenOnce();
+  if (isStandalone) {
+    document.body.addEventListener('pointerdown', requestFullscreenOnce, { once: true });
+    requestFullscreenOnce();
+  }
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
