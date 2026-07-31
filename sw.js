@@ -1,4 +1,4 @@
-const CACHE_NAME = 'night-clock-v1';
+const CACHE_NAME = 'night-clock-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -21,8 +21,18 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Network-first: always try to fetch the latest version. Only fall back to
+// the cached copy if the network request fails (e.g. offline). This means
+// future edits show up on next load instead of getting stuck behind a
+// stale cache.
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    fetch(event.request)
+      .then((response) => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
