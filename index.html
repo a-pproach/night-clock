@@ -188,6 +188,10 @@
   document.body.addEventListener('pointermove', movePress);
   document.body.addEventListener('pointercancel', () => clearTimeout(pressTimer));
 
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.matchMedia('(display-mode: fullscreen)').matches ||
+                        window.navigator.standalone === true;
+
   let wakeLock = null;
   async function requestWakeLock() {
     try {
@@ -198,8 +202,41 @@
   }
   requestWakeLock();
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') requestWakeLock();
+    if (document.visibilityState === 'visible') {
+      requestWakeLock();
+      if (noSleepVideo && noSleepVideo.paused) {
+        noSleepVideo.play().catch(() => {});
+      }
+    }
   });
+
+  // --- iOS fallback: the Wake Lock API is unreliable in installed PWAs on
+  // iOS/Safari, even on versions that technically support it. A silent,
+  // invisible, looping video is the standard workaround — iOS honours
+  // "keep screen on while video plays" far more consistently than the
+  // Wake Lock API itself.
+  const noSleepVideo = document.createElement('video');
+  noSleepVideo.setAttribute('muted', '');
+  noSleepVideo.setAttribute('playsinline', '');
+  noSleepVideo.setAttribute('loop', '');
+  noSleepVideo.muted = true;
+  noSleepVideo.playsInline = true;
+  noSleepVideo.loop = true;
+  noSleepVideo.style.position = 'fixed';
+  noSleepVideo.style.width = '1px';
+  noSleepVideo.style.height = '1px';
+  noSleepVideo.style.opacity = '0';
+  noSleepVideo.style.pointerEvents = 'none';
+  // 1x1 transparent, silent, single-frame looping video (base64-embedded, no network request)
+  noSleepVideo.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAr1tZGF0AAACrgYF//+q3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE2MyByMzA2MCA1ZGI2YWE2IC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAyMSAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTMgZGVibG9jaz0xOjA6MCBhbmFseXNlPTB4MzoweDMzMSBtZT1oZXggc3VibWU9NyBwc3k9MSBwc3lfcmQ9MS4wMDowLjAwIG1peGVkX3JlZj0xIG1lX3JhbmdlPTE2IGNocm9tYV9tZT0xIHRyZWxsaXM9MSA4eDhkY3Q9MSBjcW09MCBkZWFkem9uZT0yMSwxMSBmYXN0X3Bza2lwPTEgY2hyb21hX3FwX29mZnNldD0tMiB0aHJlYWRzPTEgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz0zIGJfcHlyYW1pZD0yIGJfYWRhcHQ9MSBiX2JpYXM9MCBkaXJlY3Q9MSB3ZWlnaHRiPTEgb3Blbl9nb3A9MCB3ZWlnaHRwPTIga2V5aW50PTI1MCBrZXlpbnRfbWluPTI1IHNjZW5lY3V0PTQwIGludHJhX3JlZnJlc2g9MCByY19sb29rYWhlYWQ9NDAgcmM9Y3JmIG1idHJlZT0xIGNyZj0yMy4wIHFjb21wPTAuNjAgcXBtaW49MCBxcG1heD02OSBxcHN0ZXA9NCBpcF9yYXRpbz0xLjQwIGFxPTE6MS4wMACAAAAAB2WIhAA3//727L4FNf2f0JcRLMXaSnA+KqSAgHc0wAAAwAAAwAAJuKiZ0WFMeJsgAAALmAJUyRJcRLQXNhQAAADAAADAAADAAADAlgAAAM5AAADORgAAADORgAAADORg==';
+  document.body.appendChild(noSleepVideo);
+  function startNoSleepVideo() {
+    noSleepVideo.play().catch(() => {});
+  }
+  if (isStandalone) {
+    document.body.addEventListener('pointerdown', startNoSleepVideo, { once: true });
+    startNoSleepVideo();
+  }
 
   // --- Fullscreen fallback (hides the Android nav bar) ---
   // The Fullscreen API requires a user gesture, so we trigger it on the
@@ -209,10 +246,6 @@
   // IMPORTANT: only do this when actually running as an installed
   // standalone app — never in a regular browser tab, or it traps the
   // address bar/menu and makes the site impossible to install/navigate.
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                        window.matchMedia('(display-mode: fullscreen)').matches ||
-                        window.navigator.standalone === true;
-
   let fullscreenRequested = false;
   function requestFullscreenOnce() {
     if (fullscreenRequested || !isStandalone) return;
